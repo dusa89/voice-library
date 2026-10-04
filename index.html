@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voice Library — pick the brand voice</title>
+<style>
+:root{--bg:#0e0f13;--card:#171921;--line:#262a36;--txt:#eef0f5;--mut:#9aa1b2;--acc:#6ee7ff;--acc2:#c084fc}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+header{position:sticky;top:0;z-index:10;background:rgba(14,15,19,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:14px 18px}
+h1{margin:0 0 4px;font-size:20px}h1 span{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mut);font-size:13px;margin:0 0 12px}
+.filters{display:flex;gap:10px;flex-wrap:wrap}
+.filters select,.filters input{background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:9px 12px;font-size:14px;max-width:220px}
+.filters input{flex:1;min-width:160px}
+#count{color:var(--mut);font-size:13px;margin:10px 2px 0}
+main{padding:6px 18px 80px;max-width:1100px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0;display:flex;gap:14px;align-items:center}
+.play{flex:0 0 auto;width:52px;height:52px;border-radius:50%;border:0;cursor:pointer;font-size:20px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#0b0c10}
+.play.playing{background:#3a3f4d;color:#fff}
+.info{flex:1;min-width:0}
+.name{font-weight:700;font-size:16px;margin:0 0 3px}
+.tags{color:var(--mut);font-size:12.5px;margin:0 0 6px}
+.use{background:transparent;border:1px solid var(--acc);color:var(--acc);border-radius:9px;padding:8px 14px;font-size:13px;cursor:pointer;white-space:nowrap}
+.use:hover{background:rgba(110,231,255,.12)}
+#more{display:block;margin:22px auto;background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:12px 34px;font-size:15px;cursor:pointer}
+#toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:#1e2230;border:1px solid var(--acc);color:var(--txt);padding:13px 20px;border-radius:12px;font-size:14px;display:none;max-width:92vw;z-index:20}
+audio{width:100%;margin-top:6px;height:34px}
+.note{background:#141a26;border:1px solid var(--line);border-radius:12px;padding:12px 16px;color:var(--mut);font-size:13px;margin:14px 0}
+</style>
+</head>
+<body>
+<header>
+<h1>Voice <span>Library</span></h1>
+<p class="sub">Every voice available for the videos — press play on any card to hear it read the same sample line. When you find the one, tap "Use this voice" and tell me its name. That becomes the signature voice for the whole channel.</p>
+<div class="filters">
+<select id="fGender"><option value="">All genders</option><option value="M">Male</option><option value="F">Female</option><option value="N">Neutral</option></select>
+<select id="fAccent"><option value="">All accents</option></select>
+<select id="fTone"><option value="">All tones</option></select>
+<input id="fSearch" type="search" placeholder="Search by name…">
+</div>
+<div id="count"></div>
+</header>
+<main>
+<div class="note">Tip: the videos are money explainers for regular people, so listen for the voice that sounds like a real person talking to a friend — not an announcer. Filter Male + American to start, then browse tones like Warm, Calm, Conversational.</div>
+<div id="list"></div>
+<button id="more">Show more</button>
+</main>
+<div id="toast"></div>
+<script>
+let voices=[], shown=0; const PAGE=60;
+const list=document.getElementById('list'), more=document.getElementById('more'), count=document.getElementById('count');
+const fg=document.getElementById('fGender'), fa=document.getElementById('fAccent'), ft=document.getElementById('fTone'), fs=document.getElementById('fSearch');
+let currentAudio=null, currentBtn=null;
+fetch('voices.json').then(r=>r.json()).then(v=>{
+  voices=v;
+  [...new Set(v.map(x=>x.accent).filter(Boolean))].sort().forEach(a=>{const o=document.createElement('option');o.value=a;o.textContent=a;fa.appendChild(o);});
+  [...new Set(v.map(x=>x.tone).filter(Boolean))].sort().forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;ft.appendChild(o);});
+  reset();
+});
+function filtered(){
+  const q=fs.value.trim().toLowerCase();
+  return voices.filter(v=>
+    (!fg.value||v.gender===fg.value)&&
+    (!fa.value||v.accent===fa.value)&&
+    (!ft.value||v.tone===ft.value)&&
+    (!q||(v.name||'').toLowerCase().includes(q)||(v.desc||'').toLowerCase().includes(q)));
+}
+function card(v){
+  const d=document.createElement('div');d.className='card';
+  const g=v.gender==='F'?'Female':v.gender==='M'?'Male':'Neutral';
+  d.innerHTML=`<button class="play" aria-label="Play ${v.name}">▶</button>
+    <div class="info"><p class="name">${v.name}</p><p class="tags">${g} · ${v.accent||''} · ${v.tone||''}<br>${v.desc||''}</p></div>
+    <button class="use">Use this voice</button>`;
+  const btn=d.querySelector('.play'), use=d.querySelector('.use');
+  btn.onclick=()=>{
+    if(currentAudio){currentAudio.pause();if(currentBtn)currentBtn.classList.remove('playing');}
+    if(currentBtn===btn){currentAudio=null;currentBtn=null;return;}
+    const a=new Audio('previews/'+encodeURIComponent(v.file));
+    currentAudio=a;currentBtn=btn;btn.classList.add('playing');
+    a.onended=()=>{btn.classList.remove('playing');currentBtn=null;currentAudio=null;};
+    a.play();
+  };
+  use.onclick=()=>{
+    const id=v.id;
+    (navigator.clipboard?navigator.clipboard.writeText(id):Promise.reject()).catch(()=>{});
+    toast('You picked "'+v.name+'". Send me the name "'+v.name+'" in chat and I will make it the signature voice for every video from here on.');
+  };
+  return d;
+}
+function render(){
+  const f=filtered(); count.textContent=f.length+' voices';
+  const slice=f.slice(shown,shown+PAGE);
+  slice.forEach(v=>list.appendChild(card(v)));
+  shown+=slice.length;
+  more.style.display=shown<f.length?'block':'none';
+}
+function reset(){list.innerHTML='';shown=0;if(currentAudio){currentAudio.pause();currentAudio=null;currentBtn=null;}render();}
+[fg,fa,ft].forEach(el=>el.onchange=reset); fs.oninput=reset; more.onclick=render;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',6000);}
+</script>
+</body>
+</html>
