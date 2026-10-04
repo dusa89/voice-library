@@ -2,102 +2,389 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Voice Library — pick the brand voice</title>
 <style>
-:root{--bg:#0e0f13;--card:#171921;--line:#262a36;--txt:#eef0f5;--mut:#9aa1b2;--acc:#6ee7ff;--acc2:#c084fc}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-header{position:sticky;top:0;z-index:10;background:rgba(14,15,19,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:14px 18px}
-h1{margin:0 0 4px;font-size:20px}h1 span{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
-.sub{color:var(--mut);font-size:13px;margin:0 0 12px}
-.filters{display:flex;gap:10px;flex-wrap:wrap}
-.filters select,.filters input{background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:9px 12px;font-size:14px;max-width:220px}
-.filters input{flex:1;min-width:160px}
-#count{color:var(--mut);font-size:13px;margin:10px 2px 0}
-main{padding:6px 18px 80px;max-width:1100px;margin:0 auto}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0;display:flex;gap:14px;align-items:center}
-.play{flex:0 0 auto;width:52px;height:52px;border-radius:50%;border:0;cursor:pointer;font-size:20px;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#0b0c10}
-.play.playing{background:#3a3f4d;color:#fff}
-.info{flex:1;min-width:0}
-.name{font-weight:700;font-size:16px;margin:0 0 3px}
-.tags{color:var(--mut);font-size:12.5px;margin:0 0 6px}
-.use{background:transparent;border:1px solid var(--acc);color:var(--acc);border-radius:9px;padding:8px 14px;font-size:13px;cursor:pointer;white-space:nowrap}
-.use:hover{background:rgba(110,231,255,.12)}
-#more{display:block;margin:22px auto;background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:12px 34px;font-size:15px;cursor:pointer}
-#toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:#1e2230;border:1px solid var(--acc);color:var(--txt);padding:13px 20px;border-radius:12px;font-size:14px;display:none;max-width:92vw;z-index:20}
-audio{width:100%;margin-top:6px;height:34px}
-.note{background:#141a26;border:1px solid var(--line);border-radius:12px;padding:12px 16px;color:var(--mut);font-size:13px;margin:14px 0}
+:root{
+  --bg:#060608; --card:rgba(255,255,255,.035); --card2:rgba(255,255,255,.06);
+  --line:rgba(255,255,255,.09); --txt:#f4f4f6; --mut:#a7a7b3;
+  --iri:linear-gradient(120deg,#5eead4,#7dd3fc,#c084fc,#f0abfc,#fcd34d);
+  --chrome:linear-gradient(180deg,#ffffff 0%,#c9c9d4 38%,#f2f2f7 52%,#8e8e9a 100%);
+  --danger:#fb7185;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;padding-bottom:132px}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(900px 480px at 15% -5%,rgba(192,132,252,.14),transparent 60%),
+             radial-gradient(800px 420px at 85% 0%,rgba(94,234,212,.10),transparent 60%),
+             radial-gradient(700px 500px at 50% 110%,rgba(252,211,77,.07),transparent 60%);}
+header{position:sticky;top:0;z-index:20;background:rgba(6,6,8,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:14px 16px 10px}
+h1{margin:0;font-size:22px;letter-spacing:.3px}
+h1 .iri{background:var(--iri);-webkit-background-clip:text;background-clip:text;color:transparent}
+.chrome{background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mut);font-size:13px;margin:6px 0 10px;line-height:1.45}
+.steps{display:flex;gap:6px;margin:2px 0 10px}
+.step{flex:1;text-align:center;font-size:12px;color:var(--mut);padding:8px 2px;border-radius:10px;border:1px solid var(--line);background:var(--card);cursor:pointer;user-select:none}
+.step b{display:block;font-size:15px;margin-bottom:1px}
+.step.on{color:#0b0b0e;border:0;background:var(--iri);font-weight:700}
+.step .n{font-size:11px;opacity:.85;font-weight:400}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.controls select,.controls input{background:#101014;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px 12px;font-size:14px;max-width:200px}
+.controls input{flex:1;min-width:150px}
+.btn{background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px 14px;font-size:14px;cursor:pointer}
+.btn.irib{background:var(--iri);color:#0b0b0e;border:0;font-weight:700}
+.btn.sm{padding:7px 11px;font-size:13px}
+.btn.on{border-color:transparent;background:var(--iri);color:#0b0b0e;font-weight:700}
+#statline{color:var(--mut);font-size:13px;margin:10px 2px 0}
+#statline b{color:var(--txt)}
+main{padding:8px 14px;max-width:1060px;margin:0 auto;position:relative;z-index:1}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:12px 0;display:flex;gap:12px;align-items:center;backdrop-filter:blur(4px)}
+.card.liked{border-color:rgba(240,171,252,.55);box-shadow:0 0 0 1px rgba(240,171,252,.25)}
+.card.rejected{opacity:.38}
+.card .grow{flex:1;min-width:0}
+.name{font-weight:700;font-size:16px;margin:0 0 3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.newdot{font-size:10px;font-weight:800;letter-spacing:.6px;padding:3px 8px;border-radius:20px;background:var(--iri);color:#0b0b0e}
+.tags{color:var(--mut);font-size:12.5px;margin:0 0 4px}
+.desc{color:var(--mut);font-size:13px;margin:0;line-height:1.4}
+.rowbtns{display:flex;gap:8px;flex-shrink:0}
+.icobtn{width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:var(--card2);color:var(--txt);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.icobtn.play{background:var(--iri);border:0;color:#0b0b0e;font-size:22px;width:58px;height:58px}
+.icobtn.like.on{background:var(--iri);border:0;color:#0b0b0e}
+.icobtn.rej.on{background:var(--danger);border:0;color:#0b0b0e}
+#more{display:block;margin:20px auto;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:13px 40px;font-size:15px;cursor:pointer}
+/* player */
+#player{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(10,10,14,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom))}
+#now{font-size:13px;color:var(--mut);text-align:center;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#now b{color:var(--txt)}
+#bar{height:6px;border-radius:4px;background:rgba(255,255,255,.1);margin-bottom:10px;overflow:hidden}
+#fill{height:100%;width:0%;background:var(--iri);border-radius:4px}
+.prow{display:flex;gap:10px;justify-content:center;align-items:center}
+.pbtn{width:60px;height:60px;border-radius:50%;border:1px solid var(--line);background:var(--card2);color:var(--txt);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.pbtn.main{width:74px;height:74px;font-size:30px;background:var(--iri);border:0;color:#0b0b0e}
+.pbtn.like.on{background:var(--iri);border:0;color:#0b0b0e}
+.pbtn.rej.on{background:var(--danger);border:0;color:#0b0b0e}
+/* shortlist */
+.scard{background:var(--card);border:1px solid rgba(240,171,252,.4);border-radius:16px;padding:14px;margin:12px 0}
+.scard .top{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.scard textarea{width:100%;background:#101014;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px;font-size:14px;min-height:56px;resize:vertical;font-family:inherit}
+.scard textarea::placeholder{color:#6b6b76}
+.scard .ops{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+/* shootout */
+.shot{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.shot button{border-radius:16px;border:1px solid var(--line);background:var(--card2);color:var(--txt);padding:26px 6px;font-size:15px;cursor:pointer}
+.shot button b{display:block;font-size:34px;margin-bottom:8px;background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent}
+.shot button small{display:block;color:var(--mut);font-size:12px;margin-top:6px}
+.shot button.playing{border:0;background:var(--iri);color:#0b0b0e}
+.shot button.playing small,.shot button.playing b{color:#0b0b0e;background:none;-webkit-text-fill-color:#0b0b0e}
+/* winner */
+#winnerbox{text-align:center;padding:34px 16px}
+#winnerbox .crown{font-size:64px}
+#winnerbox h2{font-size:30px;margin:10px 0}
+#winnerbox .vid{color:var(--mut);font-size:13px;word-break:break-all;margin:8px 0 16px}
+.empty{color:var(--mut);text-align:center;padding:40px 16px;font-size:14px;line-height:1.6}
+.tip{background:rgba(125,211,252,.07);border:1px solid rgba(125,211,252,.25);border-radius:12px;padding:12px 14px;color:var(--mut);font-size:13px;margin:12px 0;line-height:1.5}
+.tip b{color:var(--txt)}
+#toast{position:fixed;bottom:140px;left:50%;transform:translateX(-50%);background:#15151c;border:1px solid rgba(240,171,252,.5);color:var(--txt);padding:12px 20px;border-radius:12px;font-size:14px;display:none;max-width:92vw;z-index:40;text-align:center}
+footer{color:#55555f;font-size:12px;text-align:center;padding:26px 16px 8px;position:relative;z-index:1}
+.view{display:none}.view.on{display:block}
 </style>
 </head>
 <body>
 <header>
-<h1>Voice <span>Library</span></h1>
-<p class="sub">Every voice available for the videos — press play on any card to hear it read the same sample line. When you find the one, tap "Use this voice" and tell me its name. That becomes the signature voice for the whole channel.</p>
-<div class="filters">
-<select id="fGender"><option value="">All genders</option><option value="M">Male</option><option value="F">Female</option><option value="N">Neutral</option></select>
-<select id="fAccent"><option value="">All accents</option></select>
-<select id="fTone"><option value="">All tones</option></select>
-<input id="fSearch" type="search" placeholder="Search by name…">
-</div>
-<div id="count"></div>
+  <h1>Voice <span class="iri">Library</span></h1>
+  <p class="sub">Same sample line on every voice. Work the funnel: <b>listen → like the good ones → shootout the finalists → crown the winner.</b> Likes, notes and progress auto-save on this device.</p>
+  <div class="steps">
+    <div class="step on" data-v="listen"><b>▶ Listen</b><span class="n" id="nListen"></span></div>
+    <div class="step" data-v="short"><b>♥ Shortlist</b><span class="n" id="nShort"></span></div>
+    <div class="step" data-v="shoot"><b>⚡ Shootout</b><span class="n" id="nShoot"></span></div>
+    <div class="step" data-v="win"><b>♛ Winner</b><span class="n" id="nWin"></span></div>
+  </div>
+  <div class="controls" id="listenControls">
+    <select id="fGender"><option value="">All genders</option><option value="M">Male</option><option value="F">Female</option><option value="N">Neutral</option></select>
+    <select id="fAccent"><option value="">All accents</option></select>
+    <select id="fTone"><option value="">All tones</option></select>
+    <input id="fSearch" type="search" placeholder="Search name…">
+    <button class="btn irib" id="playAll">▶ Play all</button>
+    <button class="btn" id="shuffleBtn" title="Shuffle the queue">🔀</button>
+    <button class="btn" id="blindBtn" title="Hide names — judge on sound only">🙈 Blind</button>
+  </div>
+  <div id="statline"></div>
 </header>
 <main>
-<div class="note">Tip: the videos are money explainers for regular people, so listen for the voice that sounds like a real person talking to a friend — not an announcer. Filter Male + American to start, then browse tones like Warm, Calm, Conversational.</div>
-<div id="list"></div>
-<button id="more">Show more</button>
+  <div class="view on" id="v-listen">
+    <div class="tip"><b>What to listen for:</b> a real person talking to a friend — not an announcer, not a commercial. Try Male + American, browse Warm / Calm / Conversational. ♥ anything that could work, ✕ hard no's, ⏭ skip the rest.</div>
+    <div id="list"></div>
+    <button id="more">Show more</button>
+  </div>
+  <div class="view" id="v-short"><div id="shortlist"></div></div>
+  <div class="view" id="v-shoot">
+    <div class="tip">Add up to 3 finalists from your shortlist, then tap <b>A / B / C</b> to flip between them on the same line. Crown the winner.</div>
+    <div id="shootPick"></div>
+    <div class="shot" id="shotBtns" style="display:none"></div>
+  </div>
+  <div class="view" id="v-win"><div id="winnerbox"></div></div>
 </main>
+<div id="player">
+  <div id="now">Pick a voice to start</div>
+  <div id="bar"><div id="fill"></div></div>
+  <div class="prow">
+    <button class="pbtn" id="pPrev" title="Previous">⏮</button>
+    <button class="pbtn rej" id="pRej" title="Not for me">✕</button>
+    <button class="pbtn main" id="pPlay" title="Play / pause">▶</button>
+    <button class="pbtn like" id="pLike" title="Like it">♥</button>
+    <button class="pbtn" id="pNext" title="Skip">⏭</button>
+  </div>
+</div>
 <div id="toast"></div>
+<footer id="catline"></footer>
 <script>
-let voices=[], shown=0; const PAGE=60;
-const list=document.getElementById('list'), more=document.getElementById('more'), count=document.getElementById('count');
-const fg=document.getElementById('fGender'), fa=document.getElementById('fAccent'), ft=document.getElementById('fTone'), fs=document.getElementById('fSearch');
-let currentAudio=null, currentBtn=null;
+/* ===== state ===== */
+const SKEY='vl2';
+let S={liked:{},rejected:{},heard:{},blind:false,shootout:[],winner:null,catCount:0};
+try{const raw=localStorage.getItem(SKEY);if(raw)S=Object.assign(S,JSON.parse(raw));}catch(e){}
+function save(){try{localStorage.setItem(SKEY,JSON.stringify(S));}catch(e){}}
+let voices=[],filtered=[],queue=[],qi=-1,shown=0;const PAGE=40;
+const $=id=>document.getElementById(id);
+const list=$('list'),more=$('more'),statline=$('statline');
+const fg=$('fGender'),fa=$('fAccent'),ft=$('fTone'),fs=$('fSearch');
+const audio=new Audio();audio.preload='auto';
+let toastT=null;
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(toastT);toastT=setTimeout(()=>t.style.display='none',2200);}
+const byId={};
+function vlabel(v,i){return S.blind?('Voice '+(i+1)):v.name;}
+function isNew(v){return !S.heard[v.id];}
+
+/* ===== data ===== */
 fetch('voices.json').then(r=>r.json()).then(v=>{
-  voices=v;
+  voices=v;voices.forEach(x=>byId[x.id]=x);
   [...new Set(v.map(x=>x.accent).filter(Boolean))].sort().forEach(a=>{const o=document.createElement('option');o.value=a;o.textContent=a;fa.appendChild(o);});
   [...new Set(v.map(x=>x.tone).filter(Boolean))].sort().forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;ft.appendChild(o);});
-  reset();
+  fetch('catalog.json').then(r=>r.json()).then(c=>{
+    $('catline').textContent='Catalog '+c.version+' · '+c.count+' voices';
+    if(S.catCount&&c.count>S.catCount)toast((c.count-S.catCount)+' new voices added since your last visit');
+    S.catCount=c.count;save();
+  }).catch(()=>{$('catline').textContent=voices.length+' voices';});
+  if(S.blind)$('blindBtn').classList.add('on');
+  applyFilters();updateSteps();
 });
-function filtered(){
-  const q=fs.value.trim().toLowerCase();
-  return voices.filter(v=>
-    (!fg.value||v.gender===fg.value)&&
-    (!fa.value||v.accent===fa.value)&&
-    (!ft.value||v.tone===ft.value)&&
-    (!q||(v.name||'').toLowerCase().includes(q)||(v.desc||'').toLowerCase().includes(q)));
+function match(v){
+  if(fg.value&&v.gender!==fg.value)return false;
+  if(fa.value&&v.accent!==fa.value)return false;
+  if(ft.value&&v.tone!==ft.value)return false;
+  if(fs.value&&!(v.name||'').toLowerCase().includes(fs.value.toLowerCase()))return false;
+  return true;
 }
-function card(v){
-  const d=document.createElement('div');d.className='card';
-  const g=v.gender==='F'?'Female':v.gender==='M'?'Male':'Neutral';
-  d.innerHTML=`<button class="play" aria-label="Play ${v.name}">▶</button>
-    <div class="info"><p class="name">${v.name}</p><p class="tags">${g} · ${v.accent||''} · ${v.tone||''}<br>${v.desc||''}</p></div>
-    <button class="use">Use this voice</button>`;
-  const btn=d.querySelector('.play'), use=d.querySelector('.use');
-  btn.onclick=()=>{
-    if(currentAudio){currentAudio.pause();if(currentBtn)currentBtn.classList.remove('playing');}
-    if(currentBtn===btn){currentAudio=null;currentBtn=null;return;}
-    const a=new Audio('previews/'+encodeURIComponent(v.file));
-    currentAudio=a;currentBtn=btn;btn.classList.add('playing');
-    a.onended=()=>{btn.classList.remove('playing');currentBtn=null;currentAudio=null;};
-    a.play();
-  };
-  use.onclick=()=>{
-    const id=v.id;
-    (navigator.clipboard?navigator.clipboard.writeText(id):Promise.reject()).catch(()=>{});
-    toast('You picked "'+v.name+'". Send me the name "'+v.name+'" in chat and I will make it the signature voice for every video from here on.');
-  };
-  return d;
+function applyFilters(){
+  filtered=voices.filter(match);
+  shown=0;list.innerHTML='';renderMore();updateStat();
 }
-function render(){
-  const f=filtered(); count.textContent=f.length+' voices';
-  const slice=f.slice(shown,shown+PAGE);
-  slice.forEach(v=>list.appendChild(card(v)));
+function updateStat(){
+  const heard=Object.keys(S.heard).length,liked=Object.keys(S.liked).length;
+  const rem=filtered.filter(v=>!S.rejected[v.id]).length;
+  statline.innerHTML='Showing <b>'+filtered.length+'</b> · heard <b>'+heard+'</b> of '+voices.length+' · ♥ <b>'+liked+'</b> · left in pool <b>'+rem+'</b>';
+  $('nListen').textContent=heard+'/'+voices.length+' heard';
+}
+/* ===== cards ===== */
+function cardHTML(v,i){
+  const liked=S.liked[v.id],rej=S.rejected[v.id];
+  const nm=S.blind?('Voice '+(filtered.indexOf(v)+1)):v.name;
+  const newb=isNew(v)?'<span class="newdot">NEW</span>':'';
+  const tags=S.blind?'':('<p class="tags">'+[v.gender==='M'?'Male':v.gender==='F'?'Female':'Neutral',v.accent,v.tone].filter(Boolean).join(' · ')+'</p>');
+  const desc=S.blind?'':('<p class="desc">'+(v.desc||'')+'</p>');
+  return '<div class="card'+(liked?' liked':'')+(rej?' rejected':'')+'" data-id="'+v.id+'">'
+    +'<button class="icobtn play" data-act="play" title="Play">▶</button>'
+    +'<div class="grow"><p class="name">'+nm+' '+newb+'</p>'+tags+desc+'</div>'
+    +'<div class="rowbtns"><button class="icobtn like'+(liked?' on':'')+'" data-act="like" title="Like">♥</button>'
+    +'<button class="icobtn rej'+(rej?' on':'')+'" data-act="rej" title="Not for me">✕</button></div></div>';
+}
+function renderMore(){
+  const slice=filtered.slice(shown,shown+PAGE);
+  list.insertAdjacentHTML('beforeend',slice.map(cardHTML).join(''));
   shown+=slice.length;
-  more.style.display=shown<f.length?'block':'none';
+  more.style.display=shown<filtered.length?'block':'none';
 }
-function reset(){list.innerHTML='';shown=0;if(currentAudio){currentAudio.pause();currentAudio=null;currentBtn=null;}render();}
-[fg,fa,ft].forEach(el=>el.onchange=reset); fs.oninput=reset; more.onclick=render;
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',6000);}
+more.onclick=renderMore;
+[fg,fa,ft].forEach(el=>el.onchange=applyFilters);
+let searchT=null;fs.oninput=()=>{clearTimeout(searchT);searchT=setTimeout(applyFilters,250);};
+list.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const id=b.closest('.card').dataset.id,act=b.dataset.act;
+  if(act==='play'){const i=filtered.findIndex(v=>v.id===id);startQueue(filtered,i);}
+  if(act==='like'){toggleLike(id);refreshCard(id);}
+  if(act==='rej'){toggleRej(id);refreshCard(id);}
+});
+function refreshCard(id){
+  const el=list.querySelector('.card[data-id="'+id+'"]');if(!el)return;
+  el.classList.toggle('liked',!!S.liked[id]);el.classList.toggle('rejected',!!S.rejected[id]);
+  el.querySelector('[data-act="like"]').classList.toggle('on',!!S.liked[id]);
+  el.querySelector('[data-act="rej"]').classList.toggle('on',!!S.rejected[id]);
+  updateStat();
+}
+function toggleLike(id){
+  if(S.liked[id]){delete S.liked[id];S.shootout=S.shootout.filter(x=>x!==id);toast('Removed from shortlist');}
+  else{S.liked[id]={note:''};toast('♥ Saved to shortlist');}
+  save();updateSteps();
+}
+function toggleRej(id){
+  if(S.rejected[id]){delete S.rejected[id];}else{S.rejected[id]=1;if(S.liked[id]){delete S.liked[id];S.shootout=S.shootout.filter(x=>x!==id);}}
+  save();updateSteps();
+}
+/* ===== queue + player ===== */
+function startQueue(arr,i){
+  queue=arr.filter(v=>!S.rejected[v.id]);
+  if(!queue.length){toast('Pool is empty — clear some ✕s or filters');return;}
+  qi=Math.max(0,queue.findIndex(v=>v.id===arr[i].id));
+  if(qi<0)qi=0;
+  playCurrent();
+}
+function playCurrent(){
+  const v=queue[qi];if(!v)return;
+  S.heard[v.id]=1;save();
+  audio.src='previews/'+v.file;
+  audio.play().catch(()=>{});
+  const lbl=S.blind?('Voice '+((filtered.indexOf(v)+1)||(qi+1))):v.name;
+  $('now').innerHTML='<b>'+lbl+'</b> · '+(qi+1)+' of '+queue.length;
+  $('pPlay').textContent='⏸';
+  $('pLike').classList.toggle('on',!!S.liked[v.id]);
+  $('pRej').classList.toggle('on',!!S.rejected[v.id]);
+  const nxt=queue[qi+1];if(nxt){const a=new Audio();a.preload='auto';a.src='previews/'+nxt.file;}
+  updateStat();updateSteps();
+}
+audio.addEventListener('ended',()=>step(1));
+audio.addEventListener('timeupdate',()=>{if(audio.duration)$('fill').style.width=(audio.currentTime/audio.duration*100)+'%';});
+function step(d){
+  if(!queue.length)return;
+  qi=(qi+d+queue.length)%queue.length;
+  playCurrent();
+}
+$('pPlay').onclick=()=>{if(!queue.length){toast('Hit ▶ Play all first');return;}if(audio.paused){audio.play();$('pPlay').textContent='⏸';}else{audio.pause();$('pPlay').textContent='▶';}};
+$('pNext').onclick=()=>step(1);
+$('pPrev').onclick=()=>step(-1);
+$('pLike').onclick=()=>{const v=queue[qi];if(!v)return;toggleLike(v.id);$('pLike').classList.toggle('on',!!S.liked[v.id]);refreshCard(v.id);step(1);};
+$('pRej').onclick=()=>{const v=queue[qi];if(!v)return;toggleRej(v.id);refreshCard(v.id);queue=queue.filter(x=>!S.rejected[x.id]);if(qi>=queue.length)qi=0;playCurrent();};
+$('playAll').onclick=()=>{if(!filtered.length)return;startQueue(filtered.slice(),0);toast('Playing '+queue.length+' voices — skip freely');};
+$('shuffleBtn').onclick=()=>{
+  const a=filtered.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  if(!a.length)return;startQueue(a,0);toast('🔀 Shuffled '+queue.length);
+};
+$('blindBtn').onclick=()=>{
+  S.blind=!S.blind;save();
+  $('blindBtn').classList.toggle('on',S.blind);
+  shown=0;list.innerHTML='';renderMore();
+  toast(S.blind?'🙈 Blind mode — judge on sound only':'Names visible');
+  if(queue.length)playCurrent();
+};
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT')return;
+  if(e.code==='Space'){e.preventDefault();$('pPlay').click();}
+  if(e.key==='ArrowRight')step(1);if(e.key==='ArrowLeft')step(-1);
+});
+/* ===== steps / views ===== */
+const views={listen:'v-listen',short:'v-short',shoot:'v-shoot',win:'v-win'};
+document.querySelectorAll('.step').forEach(s=>s.onclick=()=>{
+  document.querySelectorAll('.step').forEach(x=>x.classList.remove('on'));s.classList.add('on');
+  Object.values(views).forEach(id=>$(id).classList.remove('on'));
+  $(views[s.dataset.v]).classList.add('on');
+  $('listenControls').style.display=s.dataset.v==='listen'?'flex':'none';
+  if(s.dataset.v==='short')renderShort();
+  if(s.dataset.v==='shoot')renderShoot();
+  if(s.dataset.v==='win')renderWin();
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+function updateSteps(){
+  $('nShort').textContent=Object.keys(S.liked).length+' liked';
+  $('nShoot').textContent=S.shootout.length+'/3';
+  $('nWin').textContent=S.winner?(byId[S.winner]?byId[S.winner].name:''):'';
+}
+/* ===== shortlist ===== */
+function renderShort(){
+  const ids=Object.keys(S.liked);
+  const box=$('shortlist');
+  if(!ids.length){box.innerHTML='<div class="empty">Nothing saved yet.<br>Hit ♥ on any voice while listening and it lands here.<br>Add a note on each — what you like, what it\'d be good for.</div>';return;}
+  box.innerHTML=ids.map(id=>{
+    const v=byId[id];if(!v)return '';
+    const note=(S.liked[id]&&S.liked[id].note)||'';
+    const inShot=S.shootout.includes(id);
+    return '<div class="scard" data-id="'+id+'"><div class="top">'
+      +'<button class="icobtn play" data-act="play" title="Replay">▶</button>'
+      +'<div class="grow"><p class="name">'+v.name+'</p><p class="tags">'+[v.gender==='M'?'Male':v.gender==='F'?'Female':'Neutral',v.accent,v.tone].filter(Boolean).join(' · ')+'</p></div></div>'
+      +'<textarea data-note placeholder="Your note — what do you like about it? What would you use it for?">'+note.replace(/</g,'&lt;')+'</textarea>'
+      +'<div class="ops"><button class="btn sm'+(inShot?' on':'')+'" data-act="shot">'+(inShot?'⚡ In shootout':'⚡ To shootout')+'</button>'
+      +'<button class="btn sm" data-act="unlike">Remove</button></div></div>';
+  }).join('');
+}
+$('shortlist').addEventListener('input',e=>{
+  if(!e.target.matches('[data-note]'))return;
+  const id=e.target.closest('.scard').dataset.id;
+  if(S.liked[id]){S.liked[id].note=e.target.value;save();}
+});
+$('shortlist').addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const id=b.closest('.scard').dataset.id,act=b.dataset.act;
+  if(act==='play'){const v=byId[id];queue=[v];qi=0;playCurrent();}
+  if(act==='unlike'){toggleLike(id);renderShort();}
+  if(act==='shot'){
+    if(S.shootout.includes(id)){S.shootout=S.shootout.filter(x=>x!==id);}
+    else{if(S.shootout.length>=3){toast('Shootout holds 3 max');return;}S.shootout.push(id);}
+    save();renderShort();updateSteps();
+  }
+});
+/* ===== shootout ===== */
+function renderShoot(){
+  const ids=Object.keys(S.liked);
+  const pk=$('shootPick'),btns=$('shotBtns');
+  pk.innerHTML=ids.length?'<div class="tip" style="margin-top:0">Tap ⚡ To shootout on up to 3 (currently '+S.shootout.length+'/3). Manage in the ♥ Shortlist tab.</div>'
+    :'<div class="empty">Shortlist is empty — like some voices first.</div>';
+  if(!S.shootout.length){btns.style.display='none';return;}
+  btns.style.display='grid';
+  const ABC=['A','B','C'];
+  btns.innerHTML=S.shootout.map((id,i)=>{
+    const v=byId[id];if(!v)return '';
+    return '<button data-id="'+id+'"><b>'+ABC[i]+'</b>'+v.name+'<small>'+(v.tone||'')+' · tap to play</small></button>';
+  }).join('');
+}
+$('shotBtns').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  document.querySelectorAll('#shotBtns button').forEach(x=>x.classList.remove('playing'));
+  b.classList.add('playing');
+  const v=byId[b.dataset.id];queue=[v];qi=0;playCurrent();
+  const lbl='Shootout: '+b.querySelector('b').textContent+' — '+v.name;
+  $('now').innerHTML='<b>'+lbl+'</b>';
+});
+function renderShootCrown(){
+  const box=$('shootPick');
+  const ids=S.shootout;
+  if(ids.length){
+    box.insertAdjacentHTML('beforeend','<div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 2px">'+ids.map(id=>{
+      const v=byId[id];return '<button class="btn sm" data-crown="'+id+'">♛ Crown '+(v?v.name:id)+'</button>';}).join('')+'</div>');
+  }
+}
+$('shootPick').addEventListener('click',e=>{
+  const b=e.target.closest('[data-crown]');if(!b)return;
+  S.winner=b.dataset.crown;save();updateSteps();
+  document.querySelector('.step[data-v="win"]').click();renderWin();
+  toast('♛ Winner crowned');
+});
+const _renderShoot=renderShoot;
+renderShoot=function(){_renderShoot();renderShootCrown();};
+/* ===== winner ===== */
+function renderWin(){
+  const box=$('winnerbox');
+  const v=S.winner?byId[S.winner]:null;
+  if(!v){box.innerHTML='<div class="empty">No winner yet.<br>Crown one from the ⚡ Shootout tab.</div>';return;}
+  box.innerHTML='<div class="crown">♛</div><h2><span class="chrome">'+v.name+'</span></h2>'
+    +'<p class="sub" style="text-align:center">'+[v.gender==='M'?'Male':v.gender==='F'?'Female':'Neutral',v.accent,v.tone].filter(Boolean).join(' · ')+'</p>'
+    +'<div class="vid">Voice ID: '+v.id+'</div>'
+    +'<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">'
+    +'<button class="btn irib" id="replayWin">▶ Replay</button>'
+    +'<button class="btn" id="copyWin">Copy voice ID</button>'
+    +'<button class="btn" id="uncrown">Pick again</button></div>'
+    +'<p class="tip" style="margin-top:18px">Send me the name <b>'+v.name+'</b> in chat and it becomes the signature voice for every video.</p>';
+  $('replayWin').onclick=()=>{queue=[v];qi=0;playCurrent();};
+  $('copyWin').onclick=()=>{navigator.clipboard.writeText(v.id).then(()=>toast('Voice ID copied'));};
+  $('uncrown').onclick=()=>{S.winner=null;save();updateSteps();renderWin();};
+}
 </script>
 </body>
 </html>
