@@ -118,7 +118,7 @@ footer{color:#55555f;font-size:12px;text-align:center;padding:26px 16px 8px;posi
   </div>
   <div class="view" id="v-short"><div id="shortlist"></div></div>
   <div class="view" id="v-shoot">
-    <div class="tip">Add up to 3 finalists from your shortlist, then tap <b>A / B / C</b> to flip between them on the same line. Crown the winner.</div>
+    <div class="tip">Add up to 5 finalists from your shortlist, then tap <b>A / B / C / D / E</b> to flip between them on the same line. Crown the winner.</div>
     <div id="shootPick"></div>
     <div class="shot" id="shotBtns" style="display:none"></div>
   </div>
@@ -294,7 +294,7 @@ document.querySelectorAll('.step').forEach(s=>s.onclick=()=>{
 });
 function updateSteps(){
   $('nShort').textContent=Object.keys(S.liked).length+' liked';
-  $('nShoot').textContent=S.shootout.length+'/3';
+  $('nShoot').textContent=S.shootout.length+'/5';
   $('nWin').textContent=S.winner?(byId[S.winner]?byId[S.winner].name:''):'';
 }
 /* ===== shortlist ===== */
@@ -326,7 +326,7 @@ $('shortlist').addEventListener('click',e=>{
   if(act==='unlike'){toggleLike(id);renderShort();}
   if(act==='shot'){
     if(S.shootout.includes(id)){S.shootout=S.shootout.filter(x=>x!==id);}
-    else{if(S.shootout.length>=3){toast('Shootout holds 3 max');return;}S.shootout.push(id);}
+    else{if(S.shootout.length>=5){toast('Shootout holds 5 max');return;}S.shootout.push(id);}
     save();renderShort();updateSteps();
   }
 });
@@ -334,11 +334,11 @@ $('shortlist').addEventListener('click',e=>{
 function renderShoot(){
   const ids=Object.keys(S.liked);
   const pk=$('shootPick'),btns=$('shotBtns');
-  pk.innerHTML=ids.length?'<div class="tip" style="margin-top:0">Tap ⚡ To shootout on up to 3 (currently '+S.shootout.length+'/3). Manage in the ♥ Shortlist tab.</div>'
+  pk.innerHTML=ids.length?'<div class="tip" style="margin-top:0">Tap ⚡ To shootout on up to 5 (currently '+S.shootout.length+'/5). Manage in the ♥ Shortlist tab.</div>'
     :'<div class="empty">Shortlist is empty — like some voices first.</div>';
   if(!S.shootout.length){btns.style.display='none';return;}
   btns.style.display='grid';
-  const ABC=['A','B','C'];
+  const ABC=['A','B','C','D','E'];
   btns.innerHTML=S.shootout.map((id,i)=>{
     const v=byId[id];if(!v)return '';
     return '<button data-id="'+id+'"><b>'+ABC[i]+'</b>'+v.name+'<small>'+(v.tone||'')+' · tap to play</small></button>';
