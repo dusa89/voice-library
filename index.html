@@ -116,7 +116,17 @@ footer{color:#55555f;font-size:12px;text-align:center;padding:26px 16px 8px;posi
     <div id="list"></div>
     <button id="more">Show more</button>
   </div>
-  <div class="view" id="v-short"><div id="shortlist"></div></div>
+  <div class="view" id="v-short">
+    <div style="display:flex;gap:8px;margin:12px 0 4px;flex-wrap:wrap">
+      <button class="btn irib" id="shareBtn">📤 Share my picks with Amara</button>
+    </div>
+    <div id="sharePanel" style="display:none;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:8px 0">
+      <p class="sub" style="margin-top:0">Copy this and paste it in chat — I get your liked voices, notes, shootout and winner.</p>
+      <textarea id="shareText" readonly style="width:100%;background:#101014;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px;font-size:12.5px;min-height:180px;font-family:monospace"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px"><button class="btn irib sm" id="copyShare">Copy</button></div>
+    </div>
+    <div id="shortlist"></div>
+  </div>
   <div class="view" id="v-shoot">
     <div class="tip">Add up to 5 finalists from your shortlist, then tap <b>A / B / C / D / E</b> to flip between them on the same line. Crown the winner.</div>
     <div id="shootPick"></div>
@@ -330,6 +340,20 @@ $('shortlist').addEventListener('click',e=>{
     save();renderShort();updateSteps();
   }
 });
+/* ===== share ===== */
+$('shareBtn').onclick=()=>{
+  const ids=Object.keys(S.liked);
+  let t='VOICE PICKS from Shawn — '+new Date().toISOString().slice(0,10)+'\n';
+  t+='LIKED ('+ids.length+'):\n';
+  ids.forEach((id,i)=>{const v=byId[id];const n=(S.liked[id]&&S.liked[id].note)||'';
+    t+=(i+1)+'. '+(v?v.name:id)+' | id: '+id+(v?' | '+[v.gender,v.accent,v.tone].filter(Boolean).join(', '):'')+'\n'+(n?'   note: '+n+'\n':'');});
+  t+='SHOOTOUT: '+(S.shootout.length?S.shootout.map((id,i)=>('ABCDE'[i]||'?')+'='+(byId[id]?byId[id].name:id)+' ('+id+')').join(', '):'(empty)')+'\n';
+  t+='WINNER: '+(S.winner?(byId[S.winner]?byId[S.winner].name+' ('+S.winner+')':S.winner):'(none)')+'\n';
+  $('shareText').value=t;
+  $('sharePanel').style.display='block';
+  $('sharePanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+};
+$('copyShare').onclick=()=>{navigator.clipboard.writeText($('shareText').value).then(()=>toast('Copied — paste it in chat and I\'ll have your picks'));};
 /* ===== shootout ===== */
 function renderShoot(){
   const ids=Object.keys(S.liked);
